@@ -14,7 +14,7 @@ DWORD g_DwBytesWritten = 0;
 
 /* =================GAME SETTINGS GLOBALS================== */
 std::wstring g_Tetromino[7];
-bool g_Keys[5];
+bool g_Keys[4];
 int g_FieldWidth = 12;
 int g_FieldHeight = 18;
 unsigned char* g_Field = nullptr;
@@ -23,7 +23,7 @@ unsigned char* g_Field = nullptr;
 int g_CurrentX = g_FieldWidth / 2;
 int g_CurrentY = 0;
 int g_CurrentRotation = 0;
-int g_CurrentPiece = 3;//rand() % 7;
+int g_CurrentPiece = rand() % 7;
 int g_Speed = 20;
 int g_SpeedTickCounter = 0;
 int g_PiecesCounter = 0;
@@ -133,9 +133,9 @@ void Init()
 
 void Input()
 {
-	for (int k = 0; k < 5; k++)
-	{														  //  R   L   D Z esc
-		g_Keys[k] = (0x8000 & GetAsyncKeyState((unsigned char)("\x27\x25\x28Z\x1B"[k]))) != 0;
+	for (int k = 0; k < 4; k++)
+	{														  //  R   L   D Z 
+		g_Keys[k] = (0x8000 & GetAsyncKeyState((unsigned char)("\x27\x25\x28Z"[k]))) != 0;
 	}
 }
 
@@ -177,11 +177,6 @@ void HandleInput()
 	{
 		g_IsRotationPressesd = false;
 	}
-
-	if (g_Keys[4] /* Esc */)
-	{
-		g_GameOver = true;
-	}
 }
 
 void LockPiece()
@@ -190,7 +185,7 @@ void LockPiece()
 	{
 		for (int py = 0; py < 4; py++)
 		{
-			if (g_Tetromino[g_CurrentPiece][py * 4 + px] == L'X')
+			if (g_Tetromino[g_CurrentPiece][Rotate(px, py, g_CurrentRotation)] == L'X')
 			{
 				g_Field[(g_CurrentY + py) * g_FieldWidth + (g_CurrentX + px)] = g_CurrentPiece + 1;
 			}
@@ -246,7 +241,7 @@ void SpawnNewPiece()
 	g_CurrentX = g_FieldWidth / 2;
 	g_CurrentY = 0;
 	g_CurrentRotation = 0;
-	g_CurrentPiece = 3;//rand() % 7;
+	g_CurrentPiece = rand() % 7;
 }
 
 void GameOver()
